@@ -1,5 +1,5 @@
 function setUpUI() {
-  getApi("/allRaces", function(data) {
+  getApi("/races/all", function(data) {
     var processedData = getRaceData(JSON.parse(data));
 
     var raceIds = processedData.ids;
@@ -32,20 +32,20 @@ function setUpUI() {
 
         var name = rider.name;
         var num = rider.num;
-        //var lapTimes = rider.lapTimes;
-        //var totalTime = rider.totalTime;
+        var lapTimes = rider.lapTimes;
+        var totalTime = rider.totalTime;
 
         var p = document.createElement("p");
         var n = document.createTextNode(name + " (" + num + ")");
         p.appendChild(n);
-        //var p2 = document.createElement("p");
-        //var n2 = document.createTextNode(
-        //    "Lap Times: " + lapTimes + "  Total Time: " + totalTime
-        //  );
-        //    p2.appendChild(n2);
+        var p2 = document.createElement("p");
+        var n2 = document.createTextNode(
+          "Lap Times: " + lapTimes + "  Total Time: " + totalTime
+        );
+        p2.appendChild(n2);
 
         container.appendChild(p);
-        //    container.appendChild(p2);
+        container.appendChild(p2);
       }
     }
   });
@@ -65,7 +65,7 @@ function getRaceData(data) {
     var id = raceData._id;
     var title = raceData.title;
     var numLaps = raceData.numLaps;
-    var riderList = raceData.riderList;
+    var riderList = raceData.riders;
 
     idArray.push(id);
     titleArray.push(title);

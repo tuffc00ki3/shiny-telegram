@@ -8,13 +8,13 @@ var table;
 function setUpUI() {
   table = document.getElementById("myTable");
 
-  getApi("/lastRace", function(data) {
+  getApi("/races/last", function(data) {
     var processedData = JSON.parse(data);
 
     raceId = processedData._id;
     raceTitle = processedData.title;
     raceNumLap = processedData.numLaps;
-    raceRider = processedData.riderList;
+    raceRider = processedData.riders;
 
     makeTable();
   });
@@ -129,9 +129,8 @@ function getSum(total, num) {
 function updateTotalTime(rider, input, totalCell, flag) {
   var t = 0; // time in milliseconds
   if (flag) {
-    // there is invalid input, total time is 0
-    totalCell.innerHTML = t;
-    rider.totalTime = t;
+    totalCell.innerHTML = 0;
+    rider.totalTime = 0;
     return;
   }
   var lapArray = rider.lapTimes;
@@ -144,11 +143,8 @@ function updateTotalTime(rider, input, totalCell, flag) {
 // takes input of the form 00:00.000 and converts to milliseconds
 function convertStringToNum(lapTime) {
   var t = 0;
-  var charArray = lapTime.replace(".", ":").split(":"); // [minutes, seconds, milliseconds]
-  t +=
-    parseInt(charArray[0]) * 60 * 1000 +
-    parseInt(charArray[1]) * 1000 +
-    parseInt(charArray[2]);
+  var lt = lapTime.replace(".", ":").split(":"); // [minutes, seconds, milliseconds]
+  t += parseInt(lt[0]) * 60 * 1000 + parseInt(lt[1]) * 1000 + parseInt(lt[2]);
   return t;
 }
 
@@ -196,7 +192,7 @@ function update(id, newValue) {
   var riderNum = table.rows[row].cells[0].innerHTML;
 
   rider = getRiderfromNum(riderNum);
-  var riderID = rider.num;
+  var riderID = rider._id;
   var riderLapTimes = rider.lapTimes;
 
   if (isLapTimeValid(newValue)) {
@@ -205,11 +201,15 @@ function update(id, newValue) {
     riderLapTimes[lapcolumn - 3] = time; // -3 column offset
     if (isArrayValid(riderLapTimes)) {
       updateTotalTime(rider, time, totalCell, 0);
-      // TODO: update rider data in MongoDB -- both laptimes and totalTime
-      // todo: make this api
-      var id = rider._id;
       patchApi(
-        "/update/" + id + "/" + rider.lapTimes + "/" + rider.totalTime,
+        "/races/" +
+          raceId +
+          "/" +
+          riderID +
+          "/" +
+          riderLapTimes +
+          "/" +
+          rider.totalTime,
         function(data) {}
       );
     } else {
