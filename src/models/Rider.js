@@ -6,8 +6,7 @@ const riderSchema = new Schema({
   num: { type: Number, required: true },
   lapTimes: { type: Array },
   totalTime: { type: Number, default: 0 }
-  //position:{type:Number, default:0},
-  //isWinner_flag: {type:Boolean, default:false}
+  //isWinner: { type: Boolean, default: false }
 });
 
 module.exports = riderSchema;
