@@ -1,0 +1,14 @@
+#riderName {
+  width: 210px;
+  float: left;
+}
+
+#riderNum {
+  width: 110px;
+  margin-left: 35px;
+  float: left;
+}
+
+#riderIndex {
+  color: #ffffff;
+}

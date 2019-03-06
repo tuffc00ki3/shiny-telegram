@@ -5,7 +5,7 @@ const proxy = require("http-proxy-middleware");
 const routes = require("./src/routes/api");
 const keys = require("./config/keys");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 

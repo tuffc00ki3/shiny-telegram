@@ -3,24 +3,19 @@ const Race = require("../models/Race");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.sendFile(__dirname + "/layouts/index.html");
-});
-
-router.get("/viewAll", (req, res) => {
-  res.sendFile(__dirname + "/layouts/viewAllRaces.html");
-});
-
-router.get("/races/all", (req, res) => {
+router.get("/api/races/all", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   Race.find({}).exec((err, result) => {
     if (err) {
       console.log(err);
     }
+    console.log("getting all races");
     res.send(result);
   });
 });
 
-router.get("/races/last", (req, res) => {
+router.get("/api/races/last", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   Race.findOne({ isLast_flag: true }, (err, result) => {
     if (err) {
       console.log(err);
@@ -30,7 +25,20 @@ router.get("/races/last", (req, res) => {
   });
 });
 
-router.post("/races", (req, res) => {
+router.get("/api/races/:id", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  Race.findOne({ _id: req.params.id }, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log("getting race with id " + req.params.id);
+    res.send(result);
+  });
+});
+
+router.post("/api/races/new/:title/:numLaps/:riders", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+
   Race.findOneAndUpdate(
     { isLast_flag: true },
     { isLast_flag: false },
@@ -41,28 +49,32 @@ router.post("/races", (req, res) => {
       console.log("last race unflagged");
     }
   );
-  var riderObjects = getRiderObj(req.body);
+  var riderData = JSON.parse(req.params.riders);
+  var riderObjects = [];
+  for (var i = 0; i < riderData.length; i++) {
+    var riderObj = {
+      name: riderData[i].name,
+      num: riderData[i].num
+    };
+    riderObjects.push(riderObj);
+  }
   var raceData = {
-    title: req.body.title,
-    numLaps: req.body.numLaps,
-    riders: [],
+    title: req.params.title,
+    numLaps: req.params.numLaps,
+    riders: riderObjects,
     isLast_flag: true
   };
   var r = new Race(raceData);
   var promise = r.save();
   promise.then(function(doc) {
-    for (var i = 0; i < riderObjects.length; i++) {
-      var rider = riderObjects[i];
-      console.log(rider);
-      doc.riders.push(rider);
-    }
-    doc.save().then(function(doc) {
-      res.sendFile(__dirname + "/layouts/runRace.html");
-    });
+    console.log("post request complete");
+    res.send();
   });
 });
 
-router.patch("/races/:raceId/:riderID/:riderLapTimes/:tt", (req, res) => {
+// used POST instead of PATCH/PUT because of no-cors & access control allow origin errors
+router.post("/api/races/:raceId/:riderID/:riderLapTimes/:tt", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   Race.findOneAndUpdate(
     { _id: req.params.raceId, "riders._id": req.params.riderID },
     {
@@ -78,22 +90,5 @@ router.patch("/races/:raceId/:riderID/:riderLapTimes/:tt", (req, res) => {
     }
   );
 });
-
-function getRiderObj(data) {
-  var myRiders = [];
-  var keys = Object.keys(data);
-  for (var i = 0; i < keys.length; i += 2) {
-    if (keys[i] !== "title") {
-      var riderObj = {
-        name: data[keys[i]],
-        num: data[keys[i + 1]],
-        lapTimes: [],
-        totalTime: 0
-      };
-      myRiders.push(riderObj);
-    }
-  }
-  return myRiders;
-}
 
 module.exports = router;
