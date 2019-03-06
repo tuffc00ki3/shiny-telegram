@@ -1,0 +1,40 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway);
+
+* {
+  font-family: "Raleway", sans-serif, sans;
+  margin: 0;
+  padding: 0;
+}
+
+#race {
+  margin: auto;
+  width: 550px;
+  background: #ddffba;
+  border-radius: 2px;
+}
+
+#raceTitle {
+  margin: 20px;
+  padding-top: 15px;
+}
+
+#numLaps {
+  margin: 20px;
+}
+
+#riderRow {
+  margin: 30px;
+  padding-bottom: 20px;
+}
+
+#riderInfo {
+  margin: 20px;
+}
+
+#times {
+  margin: 20px;
+}
+
+#total {
+  margin: 20px;
+}
